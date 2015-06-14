@@ -2475,7 +2475,6 @@ static int dvb_dmxdev_section_callback(const u8 *buffer1, size_t buffer1_len,
 					      buffer2_len);
 
 	if (ret < 0) {
-		dvb_dmxdev_flush_events(&dmxdevfilter->events);
 		dmxdevfilter->buffer.error = ret;
 
 		event.type = DMX_EVENT_BUFFER_OVERFLOW;
@@ -2578,7 +2577,6 @@ static int dvb_dmxdev_ts_callback(const u8 *buffer1, size_t buffer1_len,
 			/* Enter buffer overflow state */
 			dprintk("dmxdev: buffer overflow\n");
 			buffer->error = ret;
-			dvb_dmxdev_flush_events(events);
 			event.type = DMX_EVENT_BUFFER_OVERFLOW;
 			dvb_dmxdev_add_event(events, &event);
 		} else {
@@ -2662,6 +2660,7 @@ static int dvb_dmxdev_section_event_cb(struct dmx_section_filter *filter,
 		}
 		return 0;
 	}
+<<<<<<< HEAD
 
 	free = dvb_ringbuffer_free(&dmxdevfilter->buffer);
 
@@ -2693,6 +2692,12 @@ static int dvb_dmxdev_section_event_cb(struct dmx_section_filter *filter,
 	res = dvb_dmxdev_add_event(&dmxdevfilter->events, &event);
 	DVB_RINGBUFFER_PUSH(&dmxdevfilter->buffer, dmx_data_ready->data_length);
 
+=======
+	if (ret < 0)
+		dmxdevfilter->buffer.error = ret;
+	if (dmxdevfilter->params.sec.flags & DMX_ONESHOT)
+		dmxdevfilter->state = DMXDEV_STATE_DONE;
+>>>>>>> v3.4.96
 	spin_unlock(&dmxdevfilter->dev->lock);
 	wake_up_all(&dmxdevfilter->buffer.queue);
 
@@ -2824,6 +2829,7 @@ static int dvb_dmxdev_ts_event_cb(struct dmx_ts_feed *feed,
 		wake_up_all(&buffer->queue);
 		return 0;
 	}
+<<<<<<< HEAD
 
 	free = dvb_ringbuffer_free(&dmxdevfilter->buffer);
 
@@ -2911,6 +2917,13 @@ static int dvb_dmxdev_ts_event_cb(struct dmx_ts_feed *feed,
 			events->current_event_data_size = 0;
 		 }
 	}
+=======
+	ret = dvb_dmxdev_buffer_write(buffer, buffer1, buffer1_len);
+	if (ret == buffer1_len)
+		ret = dvb_dmxdev_buffer_write(buffer, buffer2, buffer2_len);
+	if (ret < 0)
+		buffer->error = ret;
+>>>>>>> v3.4.96
 	spin_unlock(&dmxdevfilter->dev->lock);
 	wake_up_all(&buffer->queue);
 	return 0;
