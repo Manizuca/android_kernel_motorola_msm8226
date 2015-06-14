@@ -4490,7 +4490,7 @@ static inline int l2cap_config_rsp(struct l2cap_conn *conn,
 	struct l2cap_pinfo *pi;
 	int len = cmd->len - sizeof(*rsp);
 
-	if (cmd_len != sizeof(*req))
+	if (cmd_len != sizeof(*rsp))
 		return -EPROTO;
 
 	scid   = __le16_to_cpu(rsp->scid);
@@ -4761,7 +4761,7 @@ static inline int l2cap_information_rsp(struct l2cap_conn *conn,
 	struct l2cap_info_rsp *rsp = (struct l2cap_info_rsp *) data;
 	u16 type, result;
 
-	if (cmd_len != sizeof(*rsp))
+	if (cmd_len < sizeof(*rsp))
 		return -EPROTO;
 
 	type   = __le16_to_cpu(rsp->type);
@@ -5265,7 +5265,7 @@ static inline int l2cap_move_channel_confirm_rsp(struct l2cap_conn *conn,
 
 	u16 icid;
 
-	if (cmd_len < sizeof(*rsp))
+	if (cmd_len != sizeof(*rsp))
 		return -EPROTO;
 
 	icid = le16_to_cpu(rsp->icid);
